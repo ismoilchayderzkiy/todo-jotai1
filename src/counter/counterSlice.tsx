@@ -1,0 +1,13 @@
+import axios from 'axios'
+import { atomWithDefault, atomWithRefresh } from 'jotai/utils'
+
+export let api='https://68223a6fb342dce8004d921a.mockapi.io/ishoq'
+
+export const AtomData=atomWithRefresh(async()=>{
+	try {
+		let {data}=await axios.get(api)
+		return data
+	} catch (error) {
+		console.error(error);
+	}
+})
