@@ -4,23 +4,30 @@ import { api, AtomData } from './counter/counterSlice'
 import { Button, Input, Modal, Select } from 'antd'
 import axios from 'axios'
 
-const App = () => {
+interface User {
+	id: number
+	name: string
+	status: boolean
+}
+
+const App: React.FC = () => {
 	const [data, setTodo] = useAtom(AtomData)
-	const [inpNameAdd, setInpNameAdd] = useState('')
-	const [inpNameEdit, setInpNameEdit] = useState('')
-	const [statusAdd, setStatusAdd] = useState(null)
-	const [idx, setIdx] = useState(null)
-	const [isModalOpen, setIsModalOpen] = useState(false)
-	const [isModalOpen1, setIsModalOpen1] = useState(false)
+	const [inpNameAdd, setInpNameAdd] = useState<string>('')
+	const [inpNameEdit, setInpNameEdit] = useState<string>('')
+	const [statusAdd, setStatusAdd] = useState<boolean | null>(null)
+	const [idx, setIdx] = useState<number | null>(null)
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false)
+	const [isModalOpen1, setIsModalOpen1] = useState<boolean>(false)
 
 	const showModal = () => setIsModalOpen(true)
 	const handleCancel = () => setIsModalOpen(false)
 
-	const showModal1 = (e) => {
+	const showModal1 = (e: User) => {
 		setInpNameEdit(e.name)
 		setIdx(e.id)
 		setIsModalOpen1(true)
 	}
+
 	const handleCancel1 = () => setIsModalOpen1(false)
 
 	const deleteUser = async (id: number) => {
@@ -32,7 +39,7 @@ const App = () => {
 		}
 	}
 
-	const addUser = async (e: React.FormEvent) => {
+	const addUser = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		const obj = { name: inpNameAdd, status: statusAdd }
 		try {
@@ -45,21 +52,24 @@ const App = () => {
 		}
 	}
 
-	const edited = async (e: React.FormEvent) => {
+	const edited = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault()
 		const obj = { name: inpNameEdit }
-		try {
-			await axios.put(`${api}/${idx}`, obj)
-			setIsModalOpen1(false)
-			setTodo()
-		} catch (error) {
-			console.error(error)
+		if (idx !== null) {
+			try {
+				await axios.put(`${api}/${idx}`, obj)
+				setIsModalOpen1(false)
+				setTodo()
+			} catch (error) {
+				console.error(error)
+			}
 		}
 	}
 
 	const editStatus = async (id: number) => {
 		try {
-			const opa = data.find(e => e.id === id)
+			const opa = data.find((e: User) => e.id === id)
+			if (!opa) return
 			const updateStatus = { ...opa, status: !opa.status }
 			await axios.put(`${api}/${id}`, updateStatus)
 			setTodo()
@@ -82,7 +92,7 @@ const App = () => {
 				</button>
 
 				<div className="space-y-4">
-					{data.map((e) => (
+					{data.map((e: User) => (
 						<div
 							key={e.id}
 							className="flex items-center justify-between bg-white rounded-xl shadow-md px-6 py-4 hover:shadow-lg transition"
